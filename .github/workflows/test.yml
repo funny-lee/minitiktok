@@ -1,4 +1,4 @@
-name: IamCI
+name: MinitiktokCI
 
 on:
   push:
