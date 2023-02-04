@@ -1,61 +1,54 @@
-name: minitiktokCI
+name: IamCI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    types: [opened, reopened]
 
 jobs:
 
-  name: minitiktokCI
+  minitiktokci:
+    name: Test with go ${{ matrix.go_version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    environment:
+      name: minitiktokci
 
-  on:
-    push:
-      branches:
-        - '*'
-    pull_request:
-      types: [ opened, reopened ]
+    strategy:
+      matrix:
+        go_version: [1.16]
+        os: [ubuntu-latest]
 
-  jobs:
+    steps:
 
-    minitiktokci:
-      name: Test with go ${{ matrix.go_version }} on ${{ matrix.os }}
-      runs-on: ${{ matrix.os }}
-      environment:
-        name: minitiktokci
+      - name: Set up Go ${{ matrix.go_version }}
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go_version }}
+        id: go
 
-      strategy:
-        matrix:
-          go_version: [ 1.16 ]
-          os: [ ubuntu-latest ]
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
 
-      steps:
+      - name: Run go modules Tidy
+        run: |
+          make tidy
 
-        - name: Set up Go ${{ matrix.go_version }}
-          uses: actions/setup-go@v2
-          with:
-            go-version: ${{ matrix.go_version }}
-          id: go
+      - name: Check syntax and styling of go sources
+        run: |
+          make lint
 
-        - name: Check out code into the Go module directory
-          uses: actions/checkout@v2
+      - name: Run unit test and get test coverage
+        run: |
+          make cover
 
-        - name: Run go modules Tidy
-          run: |
-            make tidy
+      - name: Build source code for host platform
+        run: |
+          make build
 
-        - name: Check syntax and styling of go sources
-          run: |
-            make lint
-
-        - name: Run unit test and get test coverage
-          run: |
-            make cover
-
-        - name: Build source code for host platform
-          run: |
-            make build
-
-        - name: Collect Test Coverage File
-          uses: actions/upload-artifact@v1.0.0
-          with:
-            name: main-output
-            path: _output/coverage.out
-
+      - name: Collect Test Coverage File
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: main-output
+          path: _output/coverage.out
