@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := all
-
+ROOT_PACKAGE=github.com/funny-lee/minitiktok
 .PHONY: all
 all: tidy format lint cover build
 
