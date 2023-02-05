@@ -2,6 +2,8 @@
 ROOT_PACKAGE=github.com/funny-lee/minitiktok
 .PHONY: all
 all: tidy format lint cover build
+include scripts/make/golang.mk
+include scripts/make/dependencies.mk
 
 ## cover: Run unit test and get test coverage.
 .PHONY: cover
